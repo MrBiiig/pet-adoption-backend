@@ -1,0 +1,47 @@
+# 忽略依赖项
+node_modules/
+package-lock.json
+
+# 忽略环境变量文件
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# 忽略IDE和编辑器配置文件
+# .vscode/
+.idea/
+
+# 忽略日志文件
+*.log
+logs/
+
+# 忽略数据库相关文件
+*.sqlite
+*.sqlite3
+
+# 忽略编译输出
+dist/
+build/
+
+# 忽略操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 忽略测试相关文件
+coverage/
+.nyc_output/
+
+# 忽略临时文件
+*.tmp
+*.bak
+
+# 忽略 Sequelize 迁移文件（如果需要保留迁移文件，请删除此行）
+migrations/
+
+# 忽略种子数据文件（如果需要保留种子数据文件，请删除此行）
+seeders/
+
+# 忽略用户上传的文件
+uploads/
