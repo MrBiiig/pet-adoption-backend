@@ -1,23 +1,7 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Sequelize } from "sequelize";
 
-interface PetAttributes {
-  id: number;
-  name: string;
-  species: string;
-  breed: string;
-  age: number;
-  description: string;
-  adopted: boolean;
-}
-
-interface PetCreationAttributes
-  extends Optional<PetAttributes, "id" | "adopted"> {}
-
-class Pet
-  extends Model<PetAttributes, PetCreationAttributes>
-  implements PetAttributes
-{
+// 定义宠物模型类
+class Pet extends Model {
   public id!: number;
   public name!: string;
   public species!: string;
@@ -25,48 +9,49 @@ class Pet
   public age!: number;
   public description!: string;
   public adopted!: boolean;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
-Pet.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    species: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    breed: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    age: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        min: 0,
+// 初始化函数 - 直接返回模型类
+export default function initPet(sequelize: Sequelize) {
+  Pet.init(
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      species: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      breed: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      age: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      adopted: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
     },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    adopted: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-  },
-  {
-    sequelize,
-    tableName: "pets",
-  }
-);
+    {
+      sequelize,
+      tableName: "pets",
+    }
+  );
 
-export default Pet;
+  return Pet;
+}

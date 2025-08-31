@@ -1,73 +1,48 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
-import bcrypt from "bcryptjs";
+import { DataTypes, Model, Sequelize } from "sequelize";
 
-interface UserAttributes {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  role: "admin" | "user";
-}
-
-interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
-
-class User
-  extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes
-{
+// 定义用户模型类
+class User extends Model {
   public id!: number;
   public name!: string;
   public email!: string;
   public password!: string;
-  public role!: "admin" | "user";
-
-  public async comparePassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.password);
-  }
+  public role!: "user" | "admin";
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
-User.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true,
+// 初始化函数 - 直接返回模型类
+export default function initUser(sequelize: Sequelize) {
+  User.init(
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      role: {
+        type: DataTypes.ENUM("user", "admin"),
+        defaultValue: "user",
       },
     },
-    password: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    role: {
-      type: DataTypes.ENUM("admin", "user"),
-      allowNull: false,
-      defaultValue: "user",
-    },
-  },
-  {
-    sequelize,
-    tableName: "users",
-    hooks: {
-      beforeSave: async (user: User) => {
-        if (user.changed("password")) {
-          const salt = await bcrypt.genSalt(10);
-          user.password = await bcrypt.hash(user.password, salt);
-        }
-      },
-    },
-  }
-);
+    {
+      sequelize,
+      tableName: "users",
+    }
+  );
 
-export default User;
+  return User;
+}
